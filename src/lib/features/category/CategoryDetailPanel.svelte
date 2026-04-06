@@ -1,5 +1,5 @@
 <script lang="ts">
-  import XIcon from "@lucide/svelte/icons/x";
+  import ChevronLeftIcon from "@lucide/svelte/icons/chevron-left";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
@@ -55,7 +55,7 @@
           title={t.previous}
           onclick={onCloseDetailPreview}
         >
-          <XIcon />
+          <ChevronLeftIcon />
         </Button>
         <Card.Title class="text-lg leading-tight md:text-xl">{t.detailPreview}</Card.Title>
       </div>
