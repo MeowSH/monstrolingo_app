@@ -80,40 +80,6 @@
         </div>
 
         <div class="grid gap-3 md:grid-cols-2 lg:items-start">
-          <Card.Root class="build-section-card">
-            <Card.Header class="pb-3">
-              <Card.Title class="build-section-title">{t.setSkillsSection}</Card.Title>
-            </Card.Header>
-            <Card.Content class="pt-0">
-              <Table.Root class="mx-auto w-full">
-                <Table.Header>
-                  <Table.Row>
-                    <Table.Head>{t.original}</Table.Head>
-                    <Table.Head>{t.translated}</Table.Head>
-                    <Table.Head>{t.level}</Table.Head>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {#if setSkillsTranslated.length === 0}
-                    <Table.Row>
-                      <Table.Cell colspan={3} class="text-muted-foreground text-center">
-                        {t.noSetSkillsTranslated}
-                      </Table.Cell>
-                    </Table.Row>
-                  {:else}
-                    {#each setSkillsTranslated as row, rowIndex (`set-${row.original_text}-${rowIndex}`)}
-                      <Table.Row>
-                        <Table.Cell>{row.original_text}</Table.Cell>
-                        <Table.Cell>{row.name}</Table.Cell>
-                        <Table.Cell>{row.requested_level ?? "-"}</Table.Cell>
-                      </Table.Row>
-                    {/each}
-                  {/if}
-                </Table.Body>
-              </Table.Root>
-            </Card.Content>
-          </Card.Root>
-
           {#if buildDecorationDetail}
             <Card.Root class="build-section-card">
               <Card.Header class="gap-2 pb-3">
@@ -196,6 +162,40 @@
               </Card.Content>
             </Card.Root>
           {/if}
+
+          <Card.Root class="build-section-card">
+            <Card.Header class="pb-3">
+              <Card.Title class="build-section-title">{t.setSkillsSection}</Card.Title>
+            </Card.Header>
+            <Card.Content class="pt-0">
+              <Table.Root class="mx-auto w-full">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.Head>{t.original}</Table.Head>
+                    <Table.Head>{t.translated}</Table.Head>
+                    <Table.Head>{t.level}</Table.Head>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {#if setSkillsTranslated.length === 0}
+                    <Table.Row>
+                      <Table.Cell colspan={3} class="text-muted-foreground text-center">
+                        {t.noSetSkillsTranslated}
+                      </Table.Cell>
+                    </Table.Row>
+                  {:else}
+                    {#each setSkillsTranslated as row, rowIndex (`set-${row.original_text}-${rowIndex}`)}
+                      <Table.Row>
+                        <Table.Cell>{row.original_text}</Table.Cell>
+                        <Table.Cell>{row.name}</Table.Cell>
+                        <Table.Cell>{row.requested_level ?? "-"}</Table.Cell>
+                      </Table.Row>
+                    {/each}
+                  {/if}
+                </Table.Body>
+              </Table.Root>
+            </Card.Content>
+          </Card.Root>
         </div>
 
         {#if buildResult.unmatched_elements.length > 0}

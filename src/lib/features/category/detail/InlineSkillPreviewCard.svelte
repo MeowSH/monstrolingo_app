@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ChevronLeftIcon from "@lucide/svelte/icons/chevron-left";
+  import XIcon from "@lucide/svelte/icons/x";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Alert from "$lib/components/ui/alert/index.js";
@@ -30,7 +30,7 @@
           title={t.previous}
           onclick={onClose}
         >
-          <ChevronLeftIcon />
+          <XIcon />
         </Button>
         <Card.Title class="category-section-title">{t.skillDetails}</Card.Title>
       </div>
