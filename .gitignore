@@ -8,6 +8,8 @@ build/
 coverage/
 .vite/
 .svelte-kit/
+!src/lib/features/build/
+!src/lib/features/build/**
 
 # TypeScript
 *.tsbuildinfo
