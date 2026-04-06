@@ -1,0 +1,180 @@
+# Monstrolingo - Project Specs (llms.txt)
+
+Document version: 1.0.0
+Last updated: 2026-04-06
+
+## 1) Product goal
+
+Monstrolingo is a Svelte web application that helps users view translations for Monster Hunter Wilds game data and simulator build skills.
+
+Main user actions:
+- Browse translated category lists with pagination.
+- Open entity details by stable key.
+- Translate supported build simulator links.
+- Change UI language from a language selector.
+
+## 2) Sources of truth
+
+- Backend contract (authoritative): `frontend.llm.md`
+- English category naming source: https://mhwilds.kiranico.com/
+- UI component system: https://www.shadcn-svelte.com
+
+If this file conflicts with backend JSON contracts, `frontend.llm.md` wins.
+
+## 3) Branding and assets
+
+- Application logo path: `assets/img/logo/montrolingo.png`
+- The logo must be displayed in the main layout/header and app metadata where relevant.
+
+## 4) Frontend stack
+
+- Framework: Svelte (web app)
+- UI library: shadcn-svelte
+- Data format: JSON APIs from backend
+
+Recommended base UI components:
+- `Select` for language and category controls
+- `Table` for category listings
+- `Card`, `Button`, `Input`, `Badge`, `Alert` for details and build translation flow
+
+## 5) Language model for the app
+
+### 5.1 Interface languages (UI locale)
+
+The interface must support these locales:
+- `en` (English)
+- `fr` (French)
+- `ja` (Japanese)
+- `de` (German)
+- `it` (Italian)
+- `es` (Spanish)
+- `ko` (Korean)
+- `ru` (Russian)
+
+Users must be able to switch interface language from a visible selector in the UI.
+
+### 5.2 Data translation languages (backend-driven)
+
+- Always call `GET /languages` at startup.
+- Build source/target translation selectors from API response.
+- Use language codes (`en`, `fr`, `ja`, etc.), never UUIDs.
+- Do not hardcode backend language options.
+
+## 6) Category scope and API mapping
+
+The app must expose these categories (English labels from Kiranico menu):
+
+| Category label | Category key | Backend path / operation |
+| --- | --- | --- |
+| Items | `items` | `GET /items/table`, `GET /items/detail/:external_key` |
+| Weapon | `weapon` | `GET /weapons/table`, `GET /weapons/detail/:external_key` |
+| Armor | `armor` | `GET /armor/table`, `GET /armor/detail/:external_key` |
+| Skills | `skills` | `GET /skills/table`, `GET /skills/detail/:external_key` |
+| Decorations | `decorations` | `GET /decorations/table`, `GET /decorations/detail/:external_key` |
+| Charms | `charms` | `GET /charms/table`, `GET /charms/detail/:external_key` |
+| Food Skills | `food_skills` | `GET /food-skills/table`, `GET /food-skills/detail/:external_key` |
+| Kinsect | `kinsect` | `GET /kinsects/table`, `GET /kinsects/detail/:external_key` |
+| Build translation | `build_translation` | `POST /linkbuild/translate` |
+
+Notes:
+- `Build translation` is not a paginated category table.
+- Keep `food-skills` hyphenated in API paths.
+
+## 7) Category translation matrix (UI labels)
+
+This matrix defines interface labels for each supported locale.
+
+| Category key | en | fr | ja | de | it | es | ko | ru |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| items | Items | Objets | アイテム | Gegenstände | Oggetti | Objetos | 아이템 | Предметы |
+| weapon | Weapon | Arme | 武器 | Waffe | Arma | Arma | 무기 | Оружие |
+| armor | Armor | Armure | 防具 | Rüstung | Armatura | Armadura | 방어구 | Броня |
+| skills | Skills | Compétences | スキル | Fähigkeiten | Abilità | Habilidades | 스킬 | Навыки |
+| decorations | Decorations | Décorations | 装飾品 | Dekorationen | Decorazioni | Decoraciones | 장식주 | Украшения |
+| charms | Charms | Talismans | 護石 | Talismane | Amuleti | Amuletos | 호석 | Талисманы |
+| food_skills | Food Skills | Talents culinaires | 食事スキル | Essensfähigkeiten | Abilità del cibo | Habilidades de comida | 식사 스킬 | Пищевые навыки |
+| kinsect | Kinsect | Kinsecte | 猟虫 | Kinsekt | Kinsetto | Kinsecto | 킨섹트 | Кинсект |
+| build_translation | Build translation | Traduction de build | ビルド翻訳 | Build-Übersetzung | Traduzione build | Traducción de build | 빌드 번역 | Перевод билда |
+
+Important:
+- These are UI labels only.
+- Backend category segments remain canonical (`items`, `weapons`, `armor`, `skills`, `decorations`, `charms`, `food-skills`, `kinsects`).
+
+## 8) Backend integration rules (must follow)
+
+### 8.1 Startup flow
+1. Optional `GET /health`
+2. Required `GET /languages`
+3. Select default source and target languages
+4. Load first category table
+5. Navigate to details by `external_key`
+6. Optional `GET /game/version` for display
+
+### 8.2 Table endpoints
+
+Request:
+- `GET /<cat>/table?source_lang=<code>&target_lang=<code>&page=<n>&limit=<n>`
+
+Rules:
+- `source_lang` required
+- `target_lang` required
+- `page` defaults to `1`
+- `limit` defaults to `25`, max `100`
+- Use `external_key` as stable route key
+- `description` may be empty and must not break rendering
+
+### 8.3 Detail endpoints
+
+Request:
+- `GET /<cat>/detail/:external_key?target_lang=<code>`
+
+Rules:
+- `target_lang` required
+- Success payload has `data`
+- `translation` may fallback to English when target translation is unavailable
+
+### 8.4 Build translation endpoint
+
+Request:
+- `POST /linkbuild/translate`
+- Body fields: `url`, `target_lang`
+
+Rules:
+- URL must be a supported simulator `/sim/` URL and include `skills=...` in fragment
+- `target_lang` must exist in `GET /languages`
+- `translation_mode` can be `full` or `partial`
+- Render translated skills even when `unmatched_elements` is non-empty
+- Common unmatched reasons: `skill_not_found`, `target_translation_missing`
+
+## 9) Error handling contract
+
+Handle API errors by backend `code`, not by free-text `message`.
+
+Known codes:
+- `invalid_argument` (HTTP 400)
+- `not_found` (HTTP 404)
+- `internal` (HTTP 500)
+
+Policy:
+- Show user-safe error text
+- Retry only where meaningful (typically `internal`, with backoff)
+
+## 10) Non-regression checklist
+
+- Never hardcode backend language options for data translation
+- Never send language UUIDs
+- Always include `target_lang` on detail requests
+- Always include `target_lang` in `POST /linkbuild/translate`
+- Never use legacy route `POST /simbuild/translate`
+- Never expect `equipment_recomposed` in linkbuild response
+- Keep `limit <= 100`
+- Use `food-skills` (with hyphen), not `foodskills`
+
+## 11) Minimum page-level feature set
+
+- Header with logo and UI language selector
+- Category navigation using translated labels
+- Table page per category with pagination and source/target language selectors
+- Detail page per `external_key`
+- Build translation page for simulator links
+- Safe error and partial-translation states

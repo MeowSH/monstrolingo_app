@@ -1,0 +1,9 @@
+@layer components {
+  .category-detail-card {
+    @apply border-dashed;
+  }
+
+  .category-section-title {
+    @apply text-base leading-tight md:text-lg;
+  }
+}

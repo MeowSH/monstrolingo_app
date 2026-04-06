@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+@import "tw-animate-css";
+@import "shadcn-svelte/tailwind.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/geist";
+@import "./styles/global/tokens.css";
+@import "./styles/global/theme.css";
+@import "./styles/global/base.css";
+@import "./styles/features/category.css";
+@import "./styles/features/build.css";
