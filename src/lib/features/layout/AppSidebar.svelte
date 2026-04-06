@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+  import { faGithub } from "@fortawesome/free-brands-svg-icons";
+  import BugIcon from "@lucide/svelte/icons/bug";
   import MoonIcon from "@lucide/svelte/icons/moon";
   import SunIcon from "@lucide/svelte/icons/sun";
   import { categoryDefinitions, getLocalizedLabel } from "$lib/i18n/categories";
@@ -10,6 +13,9 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Select from "$lib/components/ui/select/index.js";
+
+  const repositoryUrl = "https://github.com/MeowSH/monstrolingo_app";
+  const issuesUrl = "https://github.com/MeowSH/monstrolingo_app/issues";
 
   export let logo: string;
   export let t: UiDictionary;
@@ -97,6 +103,33 @@
       >
         {buildLabel}
       </Button>
+      <div class="mt-4 border-t border-border pt-4">
+        <p class="text-muted-foreground text-center text-xs font-medium">MeowSH 2026</p>
+        <div class="mt-3 flex items-center justify-center gap-2">
+          <Button
+            href={repositoryUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            size="icon-sm"
+            variant="outline"
+            aria-label="GitHub repository"
+            title="GitHub repository"
+          >
+            <FontAwesomeIcon icon={faGithub} />
+          </Button>
+          <Button
+            href={issuesUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            size="icon-sm"
+            variant="outline"
+            aria-label="Report a bug"
+            title="Report a bug"
+          >
+            <BugIcon />
+          </Button>
+        </div>
+      </div>
     </Card.Content>
   </Card.Root>
 </aside>
